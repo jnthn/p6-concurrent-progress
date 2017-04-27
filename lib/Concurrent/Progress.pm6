@@ -93,7 +93,12 @@ sub add-throttle($in, $interval) {
         my $emit-outstanding;
 
         whenever $in {
-            if $emit-allowed {
+            if .target.defined && .value == .target {
+                .emit;
+                $emit-allowed = False;
+                $emit-outstanding = Nil;
+            }
+            elsif $emit-allowed {
                 .emit;
                 $emit-allowed = False;
             }

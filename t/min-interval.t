@@ -47,4 +47,49 @@ use Test::Scheduler;
     }
 }
 
+{
+    my $*SCHEDULER = Test::Scheduler.new;
+    my $prog = Concurrent::Progress.new(min-interval => 1, :!auto-done);
+    my @reports;
+    my $done;
+    $prog.Supply.tap: { @reports.push($_) }, done => { $done = True };
+
+    $prog.set-target(50);
+    is @reports.elems, 1, 'Got a report after setting target';
+    given @reports[0] {
+        is .value, 0, 'First report has 0 as value';
+        is .target, 50, 'First report has correct target';
+    }
+
+    $*SCHEDULER.advance-by(0.5);
+    $prog.add(10);
+    is @reports.elems, 1, 'Add in less than a second causes no report';
+
+    $*SCHEDULER.advance-by(0.25);
+    $prog.add(10);
+    is @reports.elems, 1, 'Another in less than a second causes no report';
+
+    $*SCHEDULER.advance-by(0.25);
+    is @reports.elems, 2, 'After we reach 1 second from start, get a report';
+    given @reports[1] {
+        is .value, 20, 'Second report has correct value';
+        is .target, 50, 'Second report has correct target';
+    }
+
+    $*SCHEDULER.advance-by(0.25);
+    $prog.add(20);
+    is @reports.elems, 2, 'Another add 0.25 seconds later causes no output';
+
+    $*SCHEDULER.advance-by(0.25);
+    $prog.add(10);
+    is @reports.elems, 3, 'Add that brings us to the target causes early output';
+    given @reports[2] {
+        is .value, 50, 'Third report has correct value';
+        is .target, 50, 'Third report has correct target';
+    }
+
+    $*SCHEDULER.advance-by(0.5);
+    is @reports.elems, 3, 'No accidental output leakage later';
+}
+
 done-testing;
