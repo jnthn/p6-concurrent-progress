@@ -13,29 +13,29 @@ In the operation that should report progress, take `Concurrent::Progress` as
 a parameter (usually optional) and use it. Note that if no instance is passed,
 then the method calls silently do nothing.
 
-    sub some-async-operation(Concurrent::Progress $prog?) {
+    sub some-async-operation(Concurrent::Progress :$progress) {
         start {
             # Optionally set a target (get percentage completion calculation
             # for free).
             my @things-to-do = ...;
-            $prog.set-target(@things-to-do.elems);
+            $progress.set-target(@things-to-do.elems);
 
             # Can add 1 to the count of things completed.
             for @things-to-do {
                 ...;
-                $prog.increment();
+                $progress.increment();
             }
 
             # Or can add many.
             for @things-to-do.batch(5) -> @batch {
                 ...;
-                $prog.add(@batch.elems);
+                $progress.add(@batch.elems);
             }
 
             # Or can just set the value, if we're counting by ourselves.
             for @things-to-do.kv -> $idx, $obj {
                 ...;
-                $prog.set-value($idx + 1);
+                $progress.set-value($idx + 1);
             }
         }
     }
@@ -43,13 +43,13 @@ then the method calls silently do nothing.
 Meanwhile, in the caller (note that `whenever` automatically calls `Supply` on
 the `Concurrent::Progress object):
 
-    my $prog = Cocurrent::Progress.new;
+    my $progress = Cocurrent::Progress.new;
     react {
-        whenever $prog -> $status {
+        whenever $progress -> $status {
             say "$status.value() / $status.target() ($status.percent()%)";
         }
 
-        whenever some-async-operation($prog) {
+        whenever some-async-operation(:$progress) {
             say "Completed";
         }
     }
