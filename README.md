@@ -5,7 +5,7 @@ It's fairly straightforward to wire up concurrent progress reporting in Perl
 wishing to receive progress reports tap the `Supply`. That's exactly what this
 module does on this inside; it just saves some boilerplate and helps get a
 little more intent into the code. It is intended for cases where "N out of M"
-style progress reports are desired, where N reaching M inidicates completion.
+style progress reports are desired, where N reaching M indicates completion.
 
 ## Synopsis
 
