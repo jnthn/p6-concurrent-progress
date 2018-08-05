@@ -8,6 +8,7 @@ use Test::Scheduler;
     my @reports;
     my $done;
     $prog.Supply.tap: { @reports.push($_) }, done => { $done = True };
+    $*SCHEDULER.advance;
 
     $prog.increment;
     is @reports.elems, 1, 'Got a report after initial increment';
@@ -53,6 +54,7 @@ use Test::Scheduler;
     my @reports;
     my $done;
     $prog.Supply.tap: { @reports.push($_) }, done => { $done = True };
+    $*SCHEDULER.advance;
 
     $prog.set-target(50);
     is @reports.elems, 1, 'Got a report after setting target';
