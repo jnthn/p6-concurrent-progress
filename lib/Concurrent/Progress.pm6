@@ -69,11 +69,11 @@ method increment-target(--> Nil) {
     self && $!update-sender.emit('inctarget' => 1);
 }
 
-method add-target(Int $amount --> Nil) {
+method add-target(Int:D $amount --> Nil) {
     self && $!update-sender.emit('addtarget' => $amount);
 }
 
-method set-target(Int $target --> Nil) {
+method set-target(Int:D $target --> Nil) {
     self && $!update-sender.emit('target' => $target);
 }
 
