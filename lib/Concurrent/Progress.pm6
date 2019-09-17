@@ -35,9 +35,6 @@ submethod TWEAK() {
                 when 'value' {
                     $!current-value = $value;
                 }
-                when 'inctarget' {
-                    $!current-target++;
-                }
                 when 'addtarget' {
                     $!current-target += $value;
                 }
@@ -66,7 +63,7 @@ method set-value(Int:D $value --> Nil) {
 }
 
 method increment-target(--> Nil) {
-    self && $!update-sender.emit('inctarget' => 1);
+    self && $!update-sender.emit('addtarget' => 1);
 }
 
 method add-target(Int:D $amount --> Nil) {
