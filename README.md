@@ -83,6 +83,8 @@ The following methods may be called to report progress:
   percentage complete will be undefined. It is allowed to call `set-target`
   multiple times if there is a "moving target", but if using `auto-done` then
   it is up to you to ensure the value never reaches the target prematurely.
+* **add-target(Int $amount)** - adds a specific value to the current target.
+* **increment-target()** - increments the target value by one.
 * **set-value(Int $value)** - sets the current value included in progress
   reports, and triggers emitting a progress report if appropirate.
 * **increment** - adds 1 to the current value. It is safe to make multiple

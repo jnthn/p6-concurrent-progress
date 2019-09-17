@@ -87,4 +87,47 @@ use Test;
     }
 }
 
+{
+    my $prog = Concurrent::Progress.new;
+    my @reports;
+    my $done;
+    $prog.Supply.tap: { @reports.push($_) }, done => { $done = True };
+
+    $prog.set-target(10);
+    is @reports.elems, 1, 'Got a report when setting target';
+    nok $done, 'Not done yet';
+    given @reports[0] {
+        is .value, 0, 'Value is 0 on initial report after setting target';
+        is .target, 10, 'Target is correctly set';
+        is .percent, 0, 'Percentage is correctly calculated';
+    }
+
+    $prog.increment;
+    is @reports.elems, 2, 'Got second report after increment';
+    nok $done, 'Not done yet';
+    given @reports[1] {
+        is .value, 1, 'Value is 1 after increment';
+        is .target, 10, 'Target is still correctly set';
+        is .percent, 10, 'Percentage is still correctly calculated';
+    }
+
+    $prog.add-target(10);
+    is @reports.elems, 3, 'Got third report after increasing target by 10';
+    nok $done, 'Not done yet';
+    given @reports[2] {
+        is .value, 1, 'Value is still 1 after increasing target';
+        is .target, 20, 'Target is correctly increased';
+        is .percent, 5, 'Percentage is still correctly calculated';
+    }
+
+    $prog.add(19);
+    is @reports.elems, 4, 'Got fourth report after add';
+    ok $done, 'We *are* done now the target is hit';
+    given @reports[3] {
+        is .value, 20, 'Value is 20 after another increment';
+        is .target, 20, 'Target is still correctly set';
+        is .percent, 100, 'Percentage is still correctly calculated';
+    }
+}
+
 done-testing;
